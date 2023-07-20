@@ -26,7 +26,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -40,12 +39,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@Preview
 @Composable
 fun WeatherView(
     viewModel: WeatherViewModel = hiltViewModel()
 ) {
     val weatherData = viewModel.weatherData.observeAsState()
-
     LaunchedEffect(Unit) {
         viewModel.viewAppeared()
     }
@@ -57,7 +56,6 @@ fun WeatherView(
             weatherData.value?.let {
                 WeatherConditionIcon(url = it.iconUrl)
             }
-
         }
     }
 
