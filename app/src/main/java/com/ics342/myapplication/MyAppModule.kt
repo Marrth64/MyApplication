@@ -2,6 +2,7 @@ package com.ics342.myapplication
 
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,13 +13,12 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 @Module
 @InstallIn(SingletonComponent::class)
 object MyAppModule {
-
     @Provides
     fun provideMoshi(): Moshi {
         return Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
             .build()
     }
-
     @Provides
     fun provideRetrofit(moshi: Moshi): Retrofit {
         return Retrofit.Builder()
@@ -26,7 +26,6 @@ object MyAppModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
-
     @Provides
     fun provideApiService(retrofit: Retrofit): ApiService {
         return retrofit.create(ApiService::class.java)

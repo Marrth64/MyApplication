@@ -1,6 +1,7 @@
 package com.ics342.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -48,7 +49,7 @@ fun WeatherView(
     LaunchedEffect(Unit) {
         viewModel.viewAppeared()
     }
-
+    Log.d("JSON", viewModel.weatherData.toString())
     Column {
         Text("City")
         Row {
@@ -64,8 +65,6 @@ fun WeatherView(
 }
 
 @Composable
-fun WeatherConditionIcon(
-    url: String
-) {
+fun WeatherConditionIcon(url: String) {
     AsyncImage(model = url, contentDescription = "")
 }

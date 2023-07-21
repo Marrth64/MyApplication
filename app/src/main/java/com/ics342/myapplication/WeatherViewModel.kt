@@ -10,12 +10,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(private val apiService: ApiService): ViewModel() {
-
     private val _weatherData: MutableLiveData<WeatherData> = MutableLiveData()
     val weatherData: LiveData<WeatherData>
         get() = _weatherData
-
-
     fun viewAppeared() = viewModelScope.launch {
         _weatherData.value = apiService.getWeatherData()
     }
