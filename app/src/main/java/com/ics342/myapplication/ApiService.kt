@@ -1,5 +1,7 @@
 package com.ics342.myapplication
 
+import com.ics342.myapplication.Data.ForecastData
+import com.ics342.myapplication.Data.WeatherData
 import retrofit2.http.GET
 
 interface ApiService {

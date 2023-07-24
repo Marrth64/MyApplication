@@ -1,4 +1,4 @@
-package com.ics342.myapplication
+package com.ics342.myapplication.Data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -31,7 +31,7 @@ data class ForestTemp(
 )
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun DateConverter(DateLong: Long): String {
+fun dateConverter(DateLong: Long): String {
     val triggerTime = LocalDateTime.ofInstant(
         Instant.ofEpochSecond(DateLong),
         TimeZone.getDefault().toZoneId()

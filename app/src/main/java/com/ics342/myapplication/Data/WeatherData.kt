@@ -1,4 +1,4 @@
-package com.ics342.myapplication
+package com.ics342.myapplication.Data
 
 import com.squareup.moshi.Json
 /*
@@ -43,7 +43,7 @@ data class Forecast(
 
 data class WeatherData(
     @Json(name= "name") val locName:String,
-    @Json(name="main")  val weatherCond:WeatherCondition
+    @Json(name="main")  val weatherCond: WeatherCondition
 )
 
 
