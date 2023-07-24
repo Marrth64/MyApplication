@@ -44,20 +44,18 @@ data class Forecast(
 data class WeatherData(
     @Json(name= "name") val locName:String,
     @Json(name="main")  val weatherCond:WeatherCondition
-){
+)
 
-}
+
 data class WeatherCondition(
     @Json(name="temp") val average: Double,
     @Json(name="feels_like") val feel:Double,
     @Json(name="temp_max") val high: Double,
     @Json(name="temp_min") val low: Double,
-    @Json(name="pressure") val pressure:Int,
+    @Json(name="pressure") val pressure: Int,
     @Json(name="humidity") val humidity: Int
 )
-fun kelvinToFahrenheit(kelvinTemp: Double): Int {
-    return kelvinTemp.toInt() * 9 / 5 - 460
-}
+
 /*
 data class WeatherData(
     val conditionDescription: String,

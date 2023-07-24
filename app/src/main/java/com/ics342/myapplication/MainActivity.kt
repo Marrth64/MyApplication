@@ -26,25 +26,19 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.Coil
-import coil.ImageLoader
 import coil.compose.AsyncImage
 import com.ics342.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -53,7 +47,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             MyApplicationTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     MyApp()
                 }
             }
@@ -77,15 +74,22 @@ fun TopBarLayout(title:String){
 @Preview
 @Composable
 fun MyApp(
-    viewModel: WeatherViewModel = hiltViewModel()
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    forecastViewModel: ForecastViewModel = hiltViewModel()
 ) {
         val navController = rememberNavController()
-        val weatherData = viewModel.weatherData.observeAsState()
+        val weatherData = weatherViewModel.weatherData.observeAsState()
+        val forecastData = forecastViewModel.forecastData.observeAsState()
         LaunchedEffect(Unit) {
-            viewModel.viewAppeared()
+            weatherViewModel.viewAppeared()
+            forecastViewModel.viewAppeared()
         }
+      //  Log.d("JSON",forecastViewModel.viewAppeared().toString())
         val currentDestination = navController.currentBackStackEntry?.destination?.route
-        Scaffold(
+        Log.d("sunrise=", forecastData.value?.forecast?.get(0)?.sunrise.toString() ?: "6:00 a.m")
+    Log.d("COUNT = ", forecastData.value?.count.toString() ?: "6:00 a.m")
+
+    Scaffold(
             topBar = {
                 when (currentDestination) {
                     "main_screen" -> {
@@ -97,7 +101,7 @@ fun MyApp(
             content = {
                 NavHost(navController, startDestination = "main_screen") {
                     composable("main_screen") { HomeScreen(navController, weatherData) }
-                    composable("forecast_screen") { DetailsScreen(navController) }
+                    composable("forecast_screen") { DetailsScreen(navController,forecastData) }
                 }
             }
         )
@@ -110,14 +114,17 @@ fun MyApp(
     }
 
 @Composable
-fun DetailsScreen(navController: NavHostController) {
+fun DetailsScreen(navController: NavHostController, forecastData: State<ForecastData?>) {
      Text("Hello World")
+     Text(text = forecastData.value?.forecast?.get(0)?.sunrise.toString())
+    Button(onClick = { navController.navigate("main_screen") }) {
+        Text("WeatherScreen")
+    }
 }
 
 
 @Composable
 fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>){
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -136,7 +143,10 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>){
                 modifier = Modifier.fillMaxWidth()
 
             ){
-                Text(text =(weatherData.value?.weatherCond?.average?.let { kelvinToFahrenheit(it).toString() } + "°") ?: "°", fontSize = 100.sp)
+                Text(
+                    text =("${weatherData.value?.weatherCond?.average?.toInt().toString()}°") ?: "65°",
+                    fontSize = 100.sp
+                )
                 // Image(painter = painterResource(id = R.drawable.sunshine),
                 //   contentDescription = "My Image",
                 //    alignment = Alignment.Center,
@@ -144,18 +154,18 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>){
                 //   modifier = Modifier.size(150.dp)
 
             }
-            Text(text = ("Feels Like: "+weatherData.value?.weatherCond?.feel?.let { kelvinToFahrenheit(it).toString() } + "°")
-                ?: "Feels Like: 67")
+            Text("Feels Like: ${weatherData.value?.weatherCond?.feel?.toInt().toString()}°"
+                ?: "Feels Like: 67°")
         }
-        Text(text=("Low: "+weatherData.value?.weatherCond?.low?.let { kelvinToFahrenheit(it).toString() } + "°")
-            ?: "Low : 23")
-        Text(text= ("High: " + weatherData.value?.weatherCond?.high?.let { kelvinToFahrenheit(it).toString() } + "°")
-            ?: "High : 76"
+        Text("Low: ${weatherData.value?.weatherCond?.low?.toInt().toString()} °"
+            ?: "Low : 23°")
+        Text("High: ${weatherData.value?.weatherCond?.high?.toInt().toString()}°"
+            ?: "High : 76°"
         )
-        Text(text=("Humidity: "+weatherData.value?.weatherCond?.humidity.toString() )
-            ?: "humidity: 67")
-        Text(text=("Pressure: "+weatherData.value?.weatherCond?.pressure.toString() )
-            ?: "pressure: 67")
+        Text("Humidity: ${weatherData.value?.weatherCond?.humidity.toString()}%"
+            ?: "Humidity: 67%")
+        Text("Pressure: ${weatherData.value?.weatherCond?.pressure.toString()} mPa"
+            ?: "Pressure: 1023 mPa")
         Button(onClick = { navController.navigate("forecast_screen") }) {
            Text("Forecast")
          }
