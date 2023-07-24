@@ -22,7 +22,7 @@ object MyAppModule {
     @Provides
     fun provideRetrofit(moshi: Moshi): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("http://www.example.com")
+            .baseUrl("https://api.openweathermap.org")
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }

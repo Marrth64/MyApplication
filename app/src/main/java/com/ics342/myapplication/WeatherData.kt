@@ -3,9 +3,10 @@ package com.ics342.myapplication
 import com.squareup.moshi.Json
 /*
 data class Temperature(
-    val average: Double
-    val high: Double,
-    val low: Double,
+    @Json(name="temp") val average: Double,
+    @Json(name="feels_like") val feel:Double,
+    @Json(name="temp_max") val high: Double,
+    @Json(name="temp_min") val low: Double,
 )
 
 data class WeatherCondition(
@@ -13,13 +14,15 @@ data class WeatherCondition(
 )
 
 data class WeatherData(
-    val conditionDescription: String,
-    private val temperature: Temperature,
-    @Json(name= "weather")
-    private val weatherConditions: List<WeatherCondition>,
+
+    @Json(name= "name") private val weatherConditions: List<WeatherCondition>,
 ) {
     val highTemp: Int
         get() = temperature.high
+    val lowTemp: Int
+        get() = temperature.low
+    val averageTemp: Int
+        get() = temperature.average
     val iconUrl: String
         get() = "https://openweathermap.org/img/wn/${weatherConditions.firstOrNull()?.icon}@2x.png"
 }
@@ -37,16 +40,25 @@ data class Forecast(
     val forecasts: List<ForecastItem>
 )
 */
-data class Temperature(
-    val average: Double,
-    val high: Double,
-    val low: Double,
-)
+
+data class WeatherData(
+    @Json(name= "name") val locName:String,
+    @Json(name="main")  val weatherCond:WeatherCondition
+){
+
+}
 data class WeatherCondition(
-    val temperature: Temperature,
-    val pressure:Int,
-    val humidity: Int
+    @Json(name="temp") val average: Double,
+    @Json(name="feels_like") val feel:Double,
+    @Json(name="temp_max") val high: Double,
+    @Json(name="temp_min") val low: Double,
+    @Json(name="pressure") val pressure:Int,
+    @Json(name="humidity") val humidity: Int
 )
+fun kelvinToFahrenheit(kelvinTemp: Double): Int {
+    return kelvinTemp.toInt() * 9 / 5 - 460
+}
+/*
 data class WeatherData(
     val conditionDescription: String,
     private val temperature: Temperature,
@@ -59,5 +71,4 @@ data class WeatherData(
         get() = temperature.high
     val lowTemp:Double
         get()=temperature.low
-
-}
+}*/
