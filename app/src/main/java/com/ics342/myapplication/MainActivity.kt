@@ -1,10 +1,12 @@
 package com.ics342.myapplication
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,6 +29,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,9 +42,15 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.ics342.myapplication.ui.theme.MyApplicationTheme
 import dagger.hilt.android.AndroidEntryPoint
-
+import java.time.Instant
+import java.time.LocalDateTime
+import java.util.TimeZone
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -69,6 +78,7 @@ fun TopBarLayout(title:String){
         ),
     )
 }
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -82,26 +92,26 @@ fun MyApp(
         val forecastData = forecastViewModel.forecastData.observeAsState()
         LaunchedEffect(Unit) {
             weatherViewModel.viewAppeared()
-            forecastViewModel.viewAppeared()
+                forecastViewModel.viewAppeared()
         }
       //  Log.d("JSON",forecastViewModel.viewAppeared().toString())
         val currentDestination = navController.currentBackStackEntry?.destination?.route
-        Log.d("sunrise=", forecastData.value?.forecast?.get(0)?.sunrise.toString() ?: "6:00 a.m")
-    Log.d("COUNT = ", forecastData.value?.count.toString() ?: "6:00 a.m")
+        //Log.d("sunrise=", forecastData.value?.forecast?.get(0)?.sunrise.toString() ?: "6:00 a.m")
+    //Log.d("COUNT = ", forecastData.value?.count.toString() ?: "6:00 a.m")
 
     Scaffold(
             topBar = {
                 when (currentDestination) {
-                    "main_screen" -> {
+                    Screen.Home.route -> {
                         TopBarLayout("Weather App") }
-                    "forecast_screen" -> {
+                    Screen.Details.route -> {
                         TopBarLayout("Forecast") }
                 }
             },
             content = {
                 NavHost(navController, startDestination = "main_screen") {
-                    composable("main_screen") { HomeScreen(navController, weatherData) }
-                    composable("forecast_screen") { DetailsScreen(navController,forecastData) }
+                    composable(Screen.Home.route) { HomeScreen(navController, weatherData) }
+                    composable(Screen.Details.route) { DetailsScreen(navController,forecastData) }
                 }
             }
         )
@@ -113,13 +123,75 @@ fun MyApp(
     */
     }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DetailsScreen(navController: NavHostController, forecastData: State<ForecastData?>) {
-     Text("Hello World")
-     Text(text = forecastData.value?.forecast?.get(0)?.sunrise.toString())
-    Button(onClick = { navController.navigate("main_screen") }) {
-        Text("WeatherScreen")
+    Column {
+        forecastData.value?.forecast?.forEachIndexed { index, forecast ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(2.dp)
+                ) {
+                    //Image(
+                    //   painter = painterResource(id = R.drawable.sunshine),
+                    //    contentDescription = "My Image",
+                    //    alignment = Alignment.Center,
+                    //    contentScale = ContentScale.FillBounds,
+                    // )
+                    Text(
+                        text =DateConverter(forecast.date),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(2.dp),
+                        fontSize = 10.sp
+                    )
+                }
+                Column(
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "${forecast.temp.day.toInt()}°",
+                        fontSize = 7.sp
+                    )
+                    Row() {
+                        Text(
+                            text = "High: ${forecast.temp.max.toInt()}°",
+                            fontSize = 7.sp
+                        )
+                        Text(
+                            text = "Low: ${forecast.temp.min.toInt()}°",
+                            fontSize = 7.sp
+                        )
+                    }
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Sunrise: ${timeConverter(forecast.sunrise)}",
+                        fontSize = 7.sp
+                    )
+                    Text(
+                        text = "Sunset: ${timeConverter(forecast.sunset)}",
+                        fontSize = 7.sp
+                    )
+                }
+            }
+        }
+        Button(onClick = { navController.navigate(Screen.Home.route) }) {
+            Text("WeatherScreen")
+        }
+
     }
+
+
+
+
 }
 
 
@@ -144,7 +216,7 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>){
 
             ){
                 Text(
-                    text =("${weatherData.value?.weatherCond?.average?.toInt().toString()}°") ?: "65°",
+                    text =("${weatherData.value?.weatherCond?.average?.toInt()}°") ?: "65°",
                     fontSize = 100.sp
                 )
                 // Image(painter = painterResource(id = R.drawable.sunshine),
@@ -154,19 +226,19 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>){
                 //   modifier = Modifier.size(150.dp)
 
             }
-            Text("Feels Like: ${weatherData.value?.weatherCond?.feel?.toInt().toString()}°"
+            Text("Feels Like: ${weatherData.value?.weatherCond?.feel?.toInt()}°"
                 ?: "Feels Like: 67°")
         }
-        Text("Low: ${weatherData.value?.weatherCond?.low?.toInt().toString()} °"
+        Text("Low: ${weatherData.value?.weatherCond?.low?.toInt()}°"
             ?: "Low : 23°")
-        Text("High: ${weatherData.value?.weatherCond?.high?.toInt().toString()}°"
+        Text("High: ${weatherData.value?.weatherCond?.high?.toInt()}°"
             ?: "High : 76°"
         )
-        Text("Humidity: ${weatherData.value?.weatherCond?.humidity.toString()}%"
+        Text("Humidity: ${weatherData.value?.weatherCond?.humidity}%"
             ?: "Humidity: 67%")
-        Text("Pressure: ${weatherData.value?.weatherCond?.pressure.toString()} mPa"
+        Text("Pressure: ${weatherData.value?.weatherCond?.pressure} mPa"
             ?: "Pressure: 1023 mPa")
-        Button(onClick = { navController.navigate("forecast_screen") }) {
+        Button(onClick = { navController.navigate(Screen.Details.route) }) {
            Text("Forecast")
          }
     }
@@ -178,8 +250,6 @@ sealed class Screen(val route: String){
     object Details: Screen(route="forecast_screen")
 
 }
-
-
 @Composable
 fun WeatherConditionIcon(url: String) {
     AsyncImage(model = url, contentDescription = "")

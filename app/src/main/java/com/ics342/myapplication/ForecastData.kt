@@ -1,6 +1,15 @@
 package com.ics342.myapplication
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.squareup.moshi.Json
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.TimeZone
+
 
 data class ForecastData(
      @Json(name="cnt") val count:Int,
@@ -20,3 +29,25 @@ data class ForestTemp(
     val min : Float,
     val max: Float
 )
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun DateConverter(DateLong: Long): String {
+    val triggerTime = LocalDateTime.ofInstant(
+        Instant.ofEpochSecond(DateLong),
+        TimeZone.getDefault().toZoneId()
+    )
+    val date: LocalDate = triggerTime.toLocalDate()
+    val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("MMM d")
+    return date.format(formatter)
+}
+@RequiresApi(Build.VERSION_CODES.O)
+fun timeConverter(DateLong: Long):String{
+    val sunriseDateTime = LocalDateTime.ofInstant(
+        Instant.ofEpochSecond(DateLong),
+        ZoneId.systemDefault()
+    )
+    val formatter = DateTimeFormatter.ofPattern("h:mm a")
+    val formattedTime = sunriseDateTime.format(formatter);
+    return formattedTime
+}
+
