@@ -12,5 +12,9 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
+<<<<<<< HEAD
 rootProject.name = "Application"
+=======
+rootProject.name = "MyApplication"
+>>>>>>> assignment3
 include ':app'
