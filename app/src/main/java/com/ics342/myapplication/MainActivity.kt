@@ -71,15 +71,15 @@ fun MyApp(
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     forecastViewModel: ForecastViewModel = hiltViewModel()
 ) {
-        val navController = rememberNavController()
-        val weatherData = weatherViewModel.weatherData.observeAsState()
-        val forecastData = forecastViewModel.forecastData.observeAsState()
-        val currentDestination = navController.currentBackStackEntry?.destination?.route
+    val navController = rememberNavController()
+    val weatherData = weatherViewModel.weatherData.observeAsState()
+    val forecastData = forecastViewModel.forecastData.observeAsState()
+    var currentDestination = navController.currentBackStackEntry?.destination?.route
 
     LaunchedEffect(Unit) {
             weatherViewModel.viewAppeared()
             forecastViewModel.viewAppeared()
-        }
+    }
 
     Scaffold(
             topBar = {
@@ -88,7 +88,12 @@ fun MyApp(
                         TopBarLayout("Weather App") }
                     Screens.Details.route -> {
                         TopBarLayout("Forecast") }
+                    else -> {
+                        // Add a default title when the current destination is not recognized
+                        TopBarLayout("Weather App")
+                    }
                 }
+
             },
             content = {
                 NavHost(navController, startDestination = Screens.Home.route) {
@@ -97,18 +102,9 @@ fun MyApp(
                 }
             }
         )
-
-
-
-    /*
-
-    */
     }
 
-@Composable
-fun WeatherConditionIcon(url: String) {
-    AsyncImage(model = url, contentDescription = "")
-}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
