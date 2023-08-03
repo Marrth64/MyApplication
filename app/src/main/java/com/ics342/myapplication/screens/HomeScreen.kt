@@ -51,7 +51,8 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>) {
             Column {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
 
                 ) {
                     Text(
@@ -89,10 +90,9 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>) {
         Button(onClick = { /*TODO*/ }) {
             Text("Search")
         }
+      }
     }
-
 }
-    }
 
 
 
@@ -105,6 +105,8 @@ fun WeatherConditionIcon(
         contentDescription = "",
         alignment = Alignment.Center,
         contentScale = ContentScale.FillBounds,
+        modifier = Modifier.size(200.dp)
+
     )
 }
 
