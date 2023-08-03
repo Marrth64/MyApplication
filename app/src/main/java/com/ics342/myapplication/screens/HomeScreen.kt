@@ -75,6 +75,9 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>){
         Button(onClick = { navController.navigate(Screens.Details.route) }) {
             Text("Forecast")
         }
+        Button(onClick = { /*TODO*/ }) {
+            Text("Search")
+        }
     }
 
 }

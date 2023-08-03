@@ -1,6 +1,7 @@
 package com.ics342.myapplication.screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
+import coil.compose.rememberImagePainter
 import com.ics342.myapplication.Data.ForecastData
 import com.ics342.myapplication.Data.dateConverter
 import com.ics342.myapplication.Data.timeConverter
@@ -36,7 +40,7 @@ import com.ics342.myapplication.ViewModels.ForecastViewModel
 @Composable
 fun DetailsScreen(navController: NavHostController, forecastData: State<ForecastData?>) {
     Column(
-        modifier=Modifier
+        modifier= Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
 
@@ -45,7 +49,9 @@ fun DetailsScreen(navController: NavHostController, forecastData: State<Forecast
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth().padding(10.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -53,12 +59,9 @@ fun DetailsScreen(navController: NavHostController, forecastData: State<Forecast
                     modifier = Modifier.padding(5.dp),
 
                 ) {
-                    Image(
-                      painter = painterResource(R.drawable.sunshine),
-                      contentDescription = "My Image",
-                      alignment = Alignment.Center,
-                      contentScale = ContentScale.FillBounds,
-                    )
+                    WeatherConditionIcon(url = forecast.ForecastWeather[0].iconUrl)
+                   // Log.d("ICON", forecast.ForecastWeather.iconUrl)
+
                     Text(
                         text = dateConverter(forecast.date),
                         textAlign = TextAlign.Center,
@@ -92,10 +95,24 @@ fun DetailsScreen(navController: NavHostController, forecastData: State<Forecast
     }
 }
 
+@Composable
+fun WeatherConditionIcon(
+    url: String
+) {
+    AsyncImage(
+        model = url,
+        contentDescription = "",
+        alignment = Alignment.Center,
+        contentScale = ContentScale.FillBounds,
+    )
+}
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun PreviewDetailScreen(){
     val forecastViewModel: ForecastViewModel = hiltViewModel()
-    DetailsScreen(navController = rememberNavController(), forecastData = forecastViewModel.forecastData.observeAsState())
+    DetailsScreen(
+        navController = rememberNavController(),
+        forecastData = forecastViewModel.forecastData.observeAsState()
+    )
 }

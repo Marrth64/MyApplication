@@ -74,7 +74,7 @@ fun MyApp(
     val navController = rememberNavController()
     val weatherData = weatherViewModel.weatherData.observeAsState()
     val forecastData = forecastViewModel.forecastData.observeAsState()
-    var currentDestination = navController.currentBackStackEntry?.destination?.route
+    val currentDestination = navController.currentBackStackEntry?.destination?.route
 
     LaunchedEffect(Unit) {
             weatherViewModel.viewAppeared()
@@ -93,7 +93,6 @@ fun MyApp(
                         TopBarLayout("Weather App")
                     }
                 }
-
             },
             content = {
                 NavHost(navController, startDestination = Screens.Home.route) {
