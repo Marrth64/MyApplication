@@ -59,7 +59,7 @@ fun DetailsScreen(navController: NavHostController, forecastData: State<Forecast
                     modifier = Modifier.padding(5.dp),
 
                 ) {
-                    WeatherConditionIcon(url = forecast.ForecastWeather[0].iconUrl)
+                    ForecastConditionIcon(url = forecast.ForecastWeather[0].iconUrl)
                    // Log.d("ICON", forecast.ForecastWeather.iconUrl)
 
                     Text(
@@ -96,7 +96,7 @@ fun DetailsScreen(navController: NavHostController, forecastData: State<Forecast
 }
 
 @Composable
-fun WeatherConditionIcon(
+fun ForecastConditionIcon(
     url: String
 ) {
     AsyncImage(
