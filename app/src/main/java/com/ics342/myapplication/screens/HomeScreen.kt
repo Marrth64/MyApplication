@@ -11,29 +11,44 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.ics342.myapplication.Data.WeatherData
 import com.ics342.myapplication.R
+import com.ics342.myapplication.ViewModels.ForecastViewModel
 import com.ics342.myapplication.ViewModels.WeatherViewModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>) {
-
+fun HomeScreen(
+    navController: NavController,
+    weatherData: State<WeatherData?>,
+    weatherViewModel: WeatherViewModel,
+    forecastViewModel: ForecastViewModel
+) {
+    val context = LocalContext.current
+    val text = remember { mutableStateOf("") }
+    val maxLength = 5
     weatherData.value?.let {
         Column(
             modifier = Modifier
@@ -46,7 +61,7 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>) {
                 contentAlignment = Alignment.Center,
 
                 ) {
-                Text(text = it.locName.toString() ?: "Seaseme Street")
+                Text(it.locName)
             }
             Column {
                 Row(
@@ -60,9 +75,10 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>) {
                         fontSize = 100.sp
                     )
                     WeatherConditionIcon(url = it.weatherIcon[0].iconUrl)
-                    Log.d("URL",it.weatherIcon[0].iconUrl)
+                    //Log.d("URL",it.weatherIcon[0].iconUrl)
                 }
             }
+            Text(it.locName)
             Text(
                 "Feels Like: ${it.weatherCond.feel.toInt()}°"
                     ?: "Feels Like: 67°"
@@ -84,12 +100,28 @@ fun HomeScreen(navController: NavController, weatherData: State<WeatherData?>) {
             "Pressure: ${it.weatherCond.pressure} mPa"
                 ?: "Pressure: 1023 mPa"
         )
-        Button(onClick = { navController.navigate(Screens.Details.route) }) {
-            Text("Forecast")
-        }
-        Button(onClick = { /*TODO*/ }) {
-            Text("Search")
-        }
+
+        TextField(
+            value = text.value,
+            onValueChange = {
+                if(it.length <= maxLength && it.isDigitsOnly())
+                    text.value = it
+            },
+            label = { Text("Zipcode") },
+        )
+            Row{
+                Button(onClick = {
+                    weatherViewModel.updateWeatherData(text.value)
+                    forecastViewModel.updateForecastData(text.value)
+                }) {
+                    Text("Search")
+                }
+                Button(onClick = { navController.navigate(Screens.Details.route) }) {
+                    Text("Forecast")
+                }
+            }
+
+
       }
     }
 }
@@ -110,11 +142,11 @@ fun WeatherConditionIcon(
     )
 }
 
-@Preview
-@Composable 
-fun PreviewHomeScreen(weatherViewModel:WeatherViewModel = hiltViewModel()){
-    HomeScreen(
-        navController = rememberNavController(),
-        weatherData = weatherViewModel.weatherData.observeAsState()
-    )
-}
+//@Preview
+//@Composable
+//fun PreviewHomeScreen(weatherViewModel:WeatherViewModel = hiltViewModel()){
+ //   HomeScreen(
+      //  navController = rememberNavController(),
+    //    weatherData = weatherViewModel.weatherData.observeAsState()
+  //  )
+//}

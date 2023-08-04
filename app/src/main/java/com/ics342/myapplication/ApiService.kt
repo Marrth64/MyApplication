@@ -3,11 +3,21 @@ package com.ics342.myapplication
 import com.ics342.myapplication.Data.ForecastData
 import com.ics342.myapplication.Data.WeatherData
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface ApiService {
-    @GET("/data/2.5/weather?zip=55112,us&units=imperial&appid=5acbc703c75dd2cdb073d1746b82e7e9")
-    suspend fun getWeatherData(): WeatherData
+    @GET("weather")
+    suspend fun getWeatherData(
+        @Query("zip") zip:String,
+        @Query("units") units:String = "imperial",
+        @Query("appid") appId:String = "5acbc703c75dd2cdb073d1746b82e7e9"
+    ): WeatherData
 
-    @GET("/data/2.5/forecast/daily?zip=55112,us&units=imperial&cnt=16&appid=5acbc703c75dd2cdb073d1746b82e7e9")
-    suspend fun getForecastData(): ForecastData
+    @GET("forecast/daily?")
+    suspend fun getForecastData(
+        @Query("zip") zip:String,
+        @Query("units") units:String = "imperial",
+        @Query("cnt") cnt: Int = 16,
+        @Query("appid") appId:String = "5acbc703c75dd2cdb073d1746b82e7e9"
+    ): ForecastData
 }

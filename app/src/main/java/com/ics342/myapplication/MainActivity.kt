@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -75,7 +76,8 @@ fun MyApp(
     val weatherData = weatherViewModel.weatherData.observeAsState()
     val forecastData = forecastViewModel.forecastData.observeAsState()
     val currentDestination = navController.currentBackStackEntry?.destination?.route
-
+    val weatherViewModel = viewModel<WeatherViewModel>()
+    val forecastViewModel = viewModel<ForecastViewModel>()
     LaunchedEffect(Unit) {
             weatherViewModel.viewAppeared()
             forecastViewModel.viewAppeared()
@@ -96,7 +98,7 @@ fun MyApp(
             },
             content = {
                 NavHost(navController, startDestination = Screens.Home.route) {
-                    composable(Screens.Home.route) { HomeScreen(navController, weatherData) }
+                    composable(Screens.Home.route) { HomeScreen(navController, weatherData, weatherViewModel, forecastViewModel) }
                     composable(Screens.Details.route) { DetailsScreen(navController,forecastData) }
                 }
             }
