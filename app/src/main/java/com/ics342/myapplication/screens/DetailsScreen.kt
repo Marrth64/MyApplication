@@ -60,7 +60,6 @@ fun DetailsScreen(navController: NavHostController, forecastData: State<Forecast
 
                 ) {
                     ForecastConditionIcon(url = forecast.ForecastWeather[0].iconUrl)
-                   // Log.d("ICON", forecast.ForecastWeather.iconUrl)
 
                     Text(
                         text = dateConverter(forecast.date),

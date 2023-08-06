@@ -16,9 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -46,8 +48,9 @@ fun HomeScreen(
     weatherViewModel: WeatherViewModel,
     forecastViewModel: ForecastViewModel
 ) {
-    val context = LocalContext.current
-    val text = remember { mutableStateOf("") }
+    var text by remember {
+        mutableStateOf("")
+    }
     val maxLength = 5
     weatherData.value?.let {
         Column(
@@ -75,7 +78,6 @@ fun HomeScreen(
                         fontSize = 100.sp
                     )
                     WeatherConditionIcon(url = it.weatherIcon[0].iconUrl)
-                    //Log.d("URL",it.weatherIcon[0].iconUrl)
                 }
             }
             Text(it.locName)
@@ -102,17 +104,25 @@ fun HomeScreen(
         )
 
         TextField(
-            value = text.value,
+            value = text,
             onValueChange = {
-                if(it.length <= maxLength && it.isDigitsOnly())
-                    text.value = it
+                if(it.length<=maxLength && it.isDigitsOnly())
+                    text = it
             },
             label = { Text("Zipcode") },
+            placeholder = { Text("XXXXX")},
+            isError = text.isEmpty(),
+            supportingText = {
+                if(text.isEmpty())
+                    Text("Please fill in the zip code")
+            }
         )
             Row{
                 Button(onClick = {
-                    weatherViewModel.updateWeatherData(text.value)
-                    forecastViewModel.updateForecastData(text.value)
+                    if(text.isNotEmpty()){
+                        weatherViewModel.updateWeatherData(text)
+                        forecastViewModel.updateForecastData(text)
+                    }
                 }) {
                     Text("Search")
                 }
@@ -142,11 +152,4 @@ fun WeatherConditionIcon(
     )
 }
 
-//@Preview
-//@Composable
-//fun PreviewHomeScreen(weatherViewModel:WeatherViewModel = hiltViewModel()){
- //   HomeScreen(
-      //  navController = rememberNavController(),
-    //    weatherData = weatherViewModel.weatherData.observeAsState()
-  //  )
-//}
+
