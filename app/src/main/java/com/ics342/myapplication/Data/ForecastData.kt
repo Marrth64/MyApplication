@@ -14,7 +14,9 @@ import java.util.TimeZone
 data class ForecastData(
      @Json(name="cnt") val count:Int,
      @Json(name="list") val forecast: List<ForecastCondition>
-)
+){
+
+}
 
 data class ForecastCondition(
     @Json(name="dt") val date : Long,
@@ -22,14 +24,22 @@ data class ForecastCondition(
     @Json(name="sunset") val sunset: Long,
     @Json(name="temp") val temp : ForestTemp,
     @Json(name="pressure") val pressure : Float,
-    @Json(name="humidity") val humidity : Int
+    @Json(name="humidity") val humidity : Int,
+    @Json(name="weather") val ForecastWeather : List<ForecastWeather>
+
 )
 data class ForestTemp(
     val day : Float,
     val min : Float,
     val max: Float
 )
+data class ForecastWeather(
+    @Json(name="icon") val icon:String
 
+){
+    val iconUrl:String
+        get() = "https://openweathermap.org/img/wn/${icon}@2x.png"
+}
 @RequiresApi(Build.VERSION_CODES.O)
 fun dateConverter(DateLong: Long): String {
     val triggerTime = LocalDateTime.ofInstant(
